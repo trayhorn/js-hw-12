@@ -86,3 +86,4 @@ function handleLoadMore() {
 
   page++;
 }
+
