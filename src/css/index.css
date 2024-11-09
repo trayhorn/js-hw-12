@@ -49,19 +49,15 @@ body {
 }
 
 .gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   padding: 0;
   margin: 0 20px;
 }
 
 .gallery-item {
-  display: flex;
-  flex-direction: column;
   list-style: none;
-  width: calc(25% - 10px);
 }
 
 .item-image {
