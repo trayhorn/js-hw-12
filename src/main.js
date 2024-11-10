@@ -23,8 +23,13 @@ loadButton.addEventListener('click', handleLoadMore)
 
 function handleSearch(e) {
   e.preventDefault();
-  gallery.innerHTML = '';
+  if (!loadButton.classList.contains('is-hidden')) {
+    loadButton.classList.add('is-hidden');
+  }
 
+  page = 1;
+
+  gallery.innerHTML = '';
   searchQuery = e.currentTarget.elements.query.value;
 
   if (searchQuery === '') {
