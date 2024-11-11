@@ -1,15 +1,15 @@
-import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import fetchImages from './js/pixabay-api';
 import createMarkUp from './js/render-functions';
 
+import * as notification from './utils/notifications';
+
 const form = document.querySelector('.js-form');
 const gallery = document.querySelector('.js-gallery');
 const loadButton = document.querySelector('.js-load-button');
 
-let page = 1;
+let page = 30;
 let searchQuery;
 
 const lightbox = new SimpleLightbox('.item-link', {
@@ -19,7 +19,7 @@ const lightbox = new SimpleLightbox('.item-link', {
 });
 
 form.addEventListener('submit', handleSearch);
-loadButton.addEventListener('click', handleLoadMore)
+loadButton.addEventListener('click', handleLoadMore);
 
 function handleSearch(e) {
   e.preventDefault();
@@ -27,47 +27,46 @@ function handleSearch(e) {
     loadButton.classList.add('is-hidden');
   }
 
-  page = 1;
+  page = 30;
 
   gallery.innerHTML = '';
   searchQuery = e.currentTarget.elements.query.value;
 
   if (searchQuery === '') {
-    iziToast.error({
-      message: 'Please enter a value!',
-    });
+    notification.errorEmptyQuery();
     return;
-  };
+  }
 
   fetchImages(searchQuery, page)
     .then(({ data: { hits } }) => {
       if (hits.length === 0) {
-        iziToast.error({
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-        })
+        notification.errorQuery();
         return;
       }
       gallery.insertAdjacentHTML('beforeend', createMarkUp(hits));
       lightbox.refresh();
+
       loadButton.classList.remove('is-hidden');
       page++;
     })
-    .catch(() => {
-      iziToast.error({
-        title: 'Error',
-        message: 'Please try again',
-      });
-    });
+    .catch(() => notification.errorFetch());
 }
-
 
 function handleLoadMore() {
-  fetchImages(searchQuery, page).then(({ data: { hits } }) => {
-    gallery.insertAdjacentHTML('beforeend', createMarkUp(hits));
-    lightbox.refresh();
-  })
+  if (page <= 31) {
+    fetchImages(searchQuery, page).then(({ data: { hits } }) => {
+      gallery.insertAdjacentHTML('beforeend', createMarkUp(hits));
+      lightbox.refresh();
 
-  page++;
+      page++;
+    });
+  } else {
+    fetchImages(searchQuery, page).then(({ data: { hits } }) => {
+      gallery.insertAdjacentHTML('beforeend', createMarkUp(hits));
+      lightbox.refresh();
+    });
+
+    loadButton.classList.add('is-hidden');
+    notification.warning();
+  }
 }
-
