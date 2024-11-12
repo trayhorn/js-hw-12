@@ -9,7 +9,7 @@ const form = document.querySelector('.js-form');
 const gallery = document.querySelector('.js-gallery');
 const loadButton = document.querySelector('.js-load-button');
 
-let page = 30;
+let page;
 let searchQuery;
 
 const lightbox = new SimpleLightbox('.item-link', {
@@ -27,7 +27,7 @@ function handleSearch(e) {
     loadButton.classList.add('is-hidden');
   }
 
-  page = 30;
+  page = 1;
 
   gallery.innerHTML = '';
   searchQuery = e.currentTarget.elements.query.value;
